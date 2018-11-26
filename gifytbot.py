@@ -7,8 +7,6 @@ import requests
 import json
 from random import randint
 
-TELEGRAM_TOKEN = '757413170:AAE9MLeNPwDjrd9KkqWfvRGZe0r7YClJWjI'
-GIPHY_APIKEY = 'guhuZC1dhHW81nD0waZILkFbloTBc7Fx'
 
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Just some text to test")
@@ -45,6 +43,12 @@ def gifs_choice(bot, update):
           )
       )
     bot.answer_inline_query(update.inline_query.id, results, cache_time=0)
+
+with open("keys.json", "r") as fp:
+  keys = json.load(fp)
+
+TELEGRAM_TOKEN = keys["bots"]["translate"]
+GIPHY_APIKEY = keys["giphy"]
 
 updater = Updater(token=TELEGRAM_TOKEN)
 dispatcher = updater.dispatcher
