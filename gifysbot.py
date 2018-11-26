@@ -7,29 +7,43 @@ import requests
 import json
 from random import randint
 
-TELEGRAM_TOKEN = '685233513:AAECS0VxK1fEmNp66r7Y7id7EuzSeb-9zdQ'
+TELEGRAM_TOKEN = '754397265:AAFQ5t9E-h_-lQL2J4jHJ7-pYORkWiaZpow'
 GIPHY_APIKEY = 'guhuZC1dhHW81nD0waZILkFbloTBc7Fx'
 
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Just some text to test")
 
-def get_gif_random(search_text):
 
-  params = {
-    'api_key': GIPHY_APIKEY,
-    'tag': search_text
-  }
-  response = requests.get('http://api.giphy.com/v1/gifs/random', params=params)
-  result = list()
-  result.append(response.json()['data'])
-  return result
+def search(search_text):
+  prev_search = search_text
+  offset = 0
+
+  def get_gif_search(search_text):
+    nonlocal prev_search
+    nonlocal offset
+    if prev_search == search_text:
+      offset += 25
+    else:
+      offset = 0
+      prev_search = search_text
+
+    params = {
+      'api_key': GIPHY_APIKEY,
+      'q': search_text,
+      'offset': offset
+    }
+    response = requests.get('http://api.giphy.com/v1/gifs/search', params=params)
+    result = response.json()['data']
+    return result
+  return get_gif_search
 
 
 def gifs_choice(bot, update):
     query = update.inline_query.query
     if not query:
         return
-    result1 = get_gif_random(query)
+    # result1 = get_gif_random(query)
+    result1 = search_func(query)
     results = list()
     for i, result in enumerate(result1):
       url = result['images']['original']['url']
@@ -53,6 +67,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
+search_func = search("")
 inline_handler = InlineQueryHandler(gifs_choice)
 dispatcher.add_handler(inline_handler)
 

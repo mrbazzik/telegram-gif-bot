@@ -7,19 +7,20 @@ import requests
 import json
 from random import randint
 
-TELEGRAM_TOKEN = '685233513:AAECS0VxK1fEmNp66r7Y7id7EuzSeb-9zdQ'
+TELEGRAM_TOKEN = '757413170:AAE9MLeNPwDjrd9KkqWfvRGZe0r7YClJWjI'
 GIPHY_APIKEY = 'guhuZC1dhHW81nD0waZILkFbloTBc7Fx'
 
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Just some text to test")
 
-def get_gif_random(search_text):
+def get_gif_translate(search_text):
 
   params = {
     'api_key': GIPHY_APIKEY,
-    'tag': search_text
+    's': search_text,
+    'weirdness': randint(0, 10)
   }
-  response = requests.get('http://api.giphy.com/v1/gifs/random', params=params)
+  response = requests.get('http://api.giphy.com/v1/gifs/translate', params=params)
   result = list()
   result.append(response.json()['data'])
   return result
@@ -29,7 +30,7 @@ def gifs_choice(bot, update):
     query = update.inline_query.query
     if not query:
         return
-    result1 = get_gif_random(query)
+    result1 = get_gif_translate(query)
     results = list()
     for i, result in enumerate(result1):
       url = result['images']['original']['url']
